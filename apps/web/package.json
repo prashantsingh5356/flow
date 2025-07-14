@@ -15,6 +15,7 @@
     "@repo/db": "^0.0.0",
     "@repo/tailwind-config": "^0.0.0",
     "@repo/ui": "^0.0.0",
+    "@repo/validation": "^1.0.0",
     "@tailwindcss/postcss": "^4.1.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
