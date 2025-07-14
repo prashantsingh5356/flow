@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@repo/db": "^0.0.0",
+    "@repo/tailwind-config": "^0.0.0",
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.1.11",
     "next": "^15.3.0",
