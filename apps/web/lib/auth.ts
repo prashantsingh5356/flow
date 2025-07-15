@@ -7,6 +7,11 @@ import { UserSchema, type User } from "@repo/validation";
 
 import bcrypt from "bcrypt";
 
+type tUserGoogleDetails = Pick<
+  User,
+  "email" | "firstName" | "lastName" | "image" | "name"
+>;
+
 export const NEXT_AUTH_CONFIG = {
   providers: [
     GoogleProvider({
@@ -113,31 +118,73 @@ export const NEXT_AUTH_CONFIG = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    jwt: async ({ user, token }: any) => {
-      //   console.log(user);
+    signIn: async ({ user, account, profile }: any) => {
+      if (account.provider === "google") {
+        // get type of google action (signup/signin)
+        const cookieStore = cookies();
+        const typeOfAction = (await cookieStore).get("typeOfGoogle")?.value;
 
+        // Get User Details from google
+        const userGoogleDetails: tUserGoogleDetails = {
+          email: profile?.email,
+          name: profile?.name,
+          image: profile?.picture,
+          firstName: profile?.given_name,
+          lastName: profile?.family_name,
+        };
+
+        // check if user exists in DB
+        const isUserExist = await prisma.user.findFirst({
+          where: {
+            email: userGoogleDetails.email,
+          },
+        });
+
+        // signup google action
+        if (isUserExist && typeOfAction === "signup") {
+          (await cookieStore).delete("typeOfGoogle");
+          throw new Error(
+            "User already exists with this email, login to continue"
+          );
+        }
+
+        if (!isUserExist && typeOfAction === "signup") {
+          (await cookieStore).delete("typeOfGoogle");
+          const userRes = await prisma.user.create({
+            data: { ...userGoogleDetails, password: "GOOGLE_SIGNUP" },
+          });
+          user.id = userRes?.id;
+          user.firstName = userRes?.firstName ?? "";
+          user.lastName = userRes?.lastName ?? "";
+          return true;
+        }
+
+        // signin google action
+        if (!isUserExist) {
+          const userRes = await prisma.user.create({
+            data: { ...userGoogleDetails, password: "GOOGLE_SIGNUP" },
+          });
+          user.id = userRes?.id;
+          user.firstName = userRes?.firstName ?? "";
+          user.lastName = userRes?.lastName ?? "";
+          return true;
+        }
+
+        user.id = isUserExist?.id;
+        user.firstName = isUserExist?.firstName ?? "";
+        user.lastName = isUserExist?.lastName ?? "";
+        return true;
+      }
+      return true;
+    },
+    jwt: async ({ user, token, profile }: any) => {
       if (user) {
         token.uid = user.id;
         token.uFirstName = user.firstName;
         token.uLastName = user.lastName;
       }
+
       return token;
-    },
-    signIn: async ({ account, profile }: any) => {
-      if (account.provider === "google") {
-        const cookieStore = cookies();
-        // Add logic here to check if user exists in DB
-        // if user exists in db then retun true (dont add user to db)
-        // if user does not exist in db then create user and return true
-        // getting type of action (signup/signin)
-
-        const typeOfAction = (await cookieStore).get("typeOfGoogle")?.value;
-        console.log("--------- type is " + typeOfAction);
-
-        (await cookieStore).delete("typeOfGoogle");
-        return true;
-      }
-      return true;
     },
     session: ({ session, token, user }: any) => {
       if (session.user) {
@@ -145,8 +192,7 @@ export const NEXT_AUTH_CONFIG = {
         session.user.firstName = token.uFirstName;
         session.user.lastName = token.uLastName;
       }
-      //   console.log("---------- session details -------------");
-      //   console.log(session);
+
       return session;
     },
   },

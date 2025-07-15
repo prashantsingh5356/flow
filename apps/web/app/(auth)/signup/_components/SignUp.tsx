@@ -6,6 +6,8 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
+import { useSearchParams } from "next/navigation";
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -27,6 +29,10 @@ type tUserData = {
 
 function SignupForm() {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const googleError = searchParams.get("error") ?? "";
+  console.log(googleError);
 
   const [error, setError] = useState<UserError>({
     error: "no error",
@@ -84,6 +90,9 @@ function SignupForm() {
         Login to flow to start you product development journey
       </p>
       {!error.ok && <p className="text-red-500 mt-2">{error.error}</p>}
+      {error && (
+        <p className="text-red-500"> {decodeURIComponent(googleError)}</p>
+      )}
 
       <form className="my-8">
         <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
