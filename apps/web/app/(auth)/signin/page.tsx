@@ -1,36 +1,23 @@
-"use client";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { NEXT_AUTH_CONFIG } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function () {
-  const router = useRouter();
+import SignInForm from "./_components/SignIn";
+
+export default async function () {
+  const session = await getServerSession(NEXT_AUTH_CONFIG);
 
   return (
     <>
-      <h1>This is sign in page</h1>
-      <div>
-        <button
-          onClick={async () => {
-            await signIn("google", { callbackUrl: "/" });
-          }}
-        >
-          Login with google
-        </button>
-        <br />
-        <button
-          onClick={async () => {
-            const res = await signIn("credentials", {
-              username: "jfjqwvcjkawvcjq",
-              password: "fvjwqvfjqhvfqwvf",
-              redirect: false,
-            });
-            console.log(res);
-            router.push("/");
-          }}
-        >
-          Login with email
-        </button>
-      </div>
+      {session ? (
+        redirect("/")
+      ) : (
+        <div className=" w-full h-full flex justify-center items-center">
+          <div className="w-[70%] min-h-[80vh] flex flex-col justify-center ">
+            <SignInForm />
+          </div>
+        </div>
+      )}
     </>
   );
 }

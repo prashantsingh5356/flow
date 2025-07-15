@@ -1,5 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { cookies } from "next/headers";
 
 export const NEXT_AUTH_CONFIG = {
   providers: [
@@ -14,6 +15,20 @@ export const NEXT_AUTH_CONFIG = {
         password: { label: "password", type: "password", placeholder: "" },
       },
       async authorize(credentials: any) {
+        console.log("--------------  From credentials -------------------");
+        const cookiesValue = cookies();
+        const typeOfAction = (await cookiesValue).get(
+          "typeOfCredential"
+        )?.value;
+
+        console.log("------- type of credential --- " + typeOfAction);
+
+        // parse user input using zod
+        // Add logic here to check if user exists in DB
+        // getting type of action (signup/signin)
+        // (Sign up) if user exists in db then retun false (dont add user to db) and tell to sign in
+        // (sign in) if user exists in db and password is match then retun true (dont add user to db)
+        (await cookiesValue).delete("typeOfCredential");
         return {
           id: "user1",
           name: "asd",
@@ -33,10 +48,16 @@ export const NEXT_AUTH_CONFIG = {
     },
     signIn: async ({ account, profile }: any) => {
       if (account.provider === "google") {
-        // return profile.email_verified && profile.email.endsWith("@example.com");
-        // Add logic here to check if user exists in DB and then return true/false
-        console.log("---------------- log in with google -----------------");
+        const cookieStore = cookies();
+        // Add logic here to check if user exists in DB
+        // if user exists in db then retun true (dont add user to db)
+        // if user does not exist in db then create user and return true
+        // getting type of action (signup/signin)
 
+        const typeOfAction = (await cookieStore).get("typeOfGoogle")?.value;
+        console.log("--------- type is " + typeOfAction);
+
+        (await cookieStore).delete("typeOfGoogle");
         return true;
       }
       return true;
@@ -47,8 +68,12 @@ export const NEXT_AUTH_CONFIG = {
       }
       return session;
     },
+    // redirect: async ({ url, baseUrl }: any) => {
+    //   return baseUrl;
+    // },
   },
   pages: {
     signIn: "/signin",
+    error: "/signup",
   },
 };
