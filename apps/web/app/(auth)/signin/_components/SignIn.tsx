@@ -1,31 +1,64 @@
 "use client";
 import React from "react";
+import { useState } from "react";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 
+type UserError = {
+  error: string;
+  ok: boolean;
+  status: number;
+};
+
+type tUserDetails = {
+  email: string;
+  password: string;
+  redirect: boolean;
+};
+
 function SignInForm() {
   const router = useRouter();
-  const searchParam = useSearchParams();
-  const error = searchParam.get("error");
+
+  const [error, setError] = useState<UserError>({
+    error: "no error",
+    ok: true,
+    status: 200,
+  });
+
+  const [userDetails, setUserDetails] = useState<tUserDetails>({
+    email: "",
+    password: "",
+    redirect: false,
+  });
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log("Form submitted");
 
     const res = await signIn("credentials", {
-      username: "jfjqwvcjkawvcjq",
-      password: "fvjwqvfjqhvfqwvf",
+      email: userDetails.email,
+      password: userDetails.password,
       redirect: false,
     });
-    console.log(res);
-    if (res?.ok) router.push("/");
+
+    if (res?.ok) {
+      setError({
+        error: res?.error ?? "no error",
+        ok: res.ok,
+        status: res.status,
+      });
+      router.push("/");
+    }
+    setError({
+      error: res?.error ?? "",
+      ok: res?.ok ?? true,
+      status: res?.status ?? 401,
+    });
   };
 
   const handlerGoogleSubmit = async (e: any) => {
@@ -41,22 +74,34 @@ function SignInForm() {
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
         Login to flow to start you product development journey
       </p>
-      {error && (
-        <p className="text-red-500 mt-2">
-          {error === "OAuthAccountNotLinked"
-            ? "You already have an account with a different sign-in method."
-            : "Sign-Up failed. Please try again."}
-        </p>
-      )}
+      {!error.ok && <p className="text-red-500 mt-2">{error.error}</p>}
 
       <form className="my-8">
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
+          <Input
+            onChange={(e) =>
+              setUserDetails((prev) => {
+                return { ...prev, email: e.target.value };
+              })
+            }
+            id="email"
+            placeholder="projectmayhem@fc.com"
+            type="email"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input
+            onChange={(e) =>
+              setUserDetails((prev) => {
+                return { ...prev, password: e.target.value };
+              })
+            }
+            id="password"
+            placeholder="••••••••"
+            type="password"
+          />
         </LabelInputContainer>
 
         <button

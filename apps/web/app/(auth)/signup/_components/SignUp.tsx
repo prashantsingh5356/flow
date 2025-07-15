@@ -1,32 +1,72 @@
 "use client";
 import React from "react";
+import { useState } from "react";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { useSearchParams } from "next/navigation";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 
+type UserError = {
+  error: string;
+  ok: boolean;
+  status: number;
+};
+
+type tUserData = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  redirect: boolean;
+};
+
 function SignupForm() {
   const router = useRouter();
-  const searchParam = useSearchParams();
-  const error = searchParam.get("error");
+
+  const [error, setError] = useState<UserError>({
+    error: "no error",
+    ok: true,
+    status: 200,
+  });
+
+  const [userData, setUserData] = useState<tUserData>({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    redirect: false,
+  });
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log("Form submitted");
+
     Cookies.set("typeOfCredential", "signup");
     const res = await signIn("credentials", {
-      username: "jfjqwvcjkawvcjq",
-      password: "fvjwqvfjqhvfqwvf",
-      redirect: false,
+      email: userData.email,
+      password: userData.password,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      redirect: userData.redirect,
     });
-    console.log(res);
-    if (res?.ok) router.push("/");
+
+    if (res?.ok) {
+      setError({
+        error: res?.error ?? "no error",
+        ok: res.ok,
+        status: res.status,
+      });
+      router.push("/");
+    }
+    setError({
+      error: res?.error ?? "",
+      ok: res?.ok ?? true,
+      status: res?.status ?? 401,
+    });
   };
 
   const handlerGoogleSubmit = async (e: any) => {
@@ -43,32 +83,62 @@ function SignupForm() {
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
         Login to flow to start you product development journey
       </p>
-      {error && (
-        <p className="text-red-500 mt-2">
-          {error === "OAuthAccountNotLinked"
-            ? "You already have an account with a different sign-in method."
-            : "Sign-Up failed. Please try again."}
-        </p>
-      )}
+      {!error.ok && <p className="text-red-500 mt-2">{error.error}</p>}
 
       <form className="my-8">
         <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
           <LabelInputContainer>
             <Label htmlFor="firstname">First name</Label>
-            <Input id="firstname" placeholder="Tyler" type="text" />
+            <Input
+              onChange={(e) => {
+                setUserData((prev) => {
+                  return { ...prev, firstName: e.target.value };
+                });
+              }}
+              id="firstname"
+              placeholder="Tyler"
+              type="text"
+            />
           </LabelInputContainer>
           <LabelInputContainer>
             <Label htmlFor="lastname">Last name</Label>
-            <Input id="lastname" placeholder="Durden" type="text" />
+            <Input
+              onChange={(e) => {
+                setUserData((prev) => {
+                  return { ...prev, lastName: e.target.value };
+                });
+              }}
+              id="lastname"
+              placeholder="Durden"
+              type="text"
+            />
           </LabelInputContainer>
         </div>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
+          <Input
+            onChange={(e) => {
+              setUserData((prev) => {
+                return { ...prev, email: e.target.value };
+              });
+            }}
+            id="email"
+            placeholder="projectmayhem@fc.com"
+            type="email"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input
+            onChange={(e) => {
+              setUserData((prev) => {
+                return { ...prev, password: e.target.value };
+              });
+            }}
+            id="password"
+            placeholder="••••••••"
+            type="password"
+          />
         </LabelInputContainer>
 
         <button

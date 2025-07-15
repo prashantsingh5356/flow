@@ -1,13 +1,11 @@
 "use client";
 
-// import { prisma } from "@repo/db";
-// import { Card } from "@repo/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { UserSchema, type User } from "@repo/validation";
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const session = useSession();
   console.log(session);
 
@@ -19,6 +17,7 @@ export default function Home() {
       </div>
       <button onClick={() => signIn()}>Signin</button>
       <button onClick={() => signOut()}>Sign out</button>
+      <button onClick={() => router.push("/signup")}>Sign Up</button>
     </>
   );
 }
