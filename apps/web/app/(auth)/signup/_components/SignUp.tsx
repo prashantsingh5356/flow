@@ -64,7 +64,7 @@ function SignupForm() {
     }
     setError({
       error: res?.error ?? "",
-      ok: res?.ok ?? true,
+      ok: res?.ok ?? false,
       status: res?.status ?? 401,
     });
   };
