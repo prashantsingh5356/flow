@@ -16,7 +16,7 @@ import {
   SidebarGroupAction,
 } from "@/components/ui/sidebar";
 
-import { Home, Search, Settings, CircleCheck, Flag } from "lucide-react";
+import { Home, Search, Settings, CircleCheck, Users } from "lucide-react";
 import { AudioWaveform, Command, GalleryVerticalEnd, Plus } from "lucide-react";
 
 import TeamSwitcher from "./TeamSwitcher";
@@ -49,7 +49,7 @@ const items = [
     name: "members",
     title: "Members",
     url: "/dashboard/members",
-    icon: Search,
+    icon: Users,
   },
 ];
 

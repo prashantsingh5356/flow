@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { useState } from "react";
 
@@ -32,7 +33,6 @@ function SignupForm() {
 
   const searchParams = useSearchParams();
   const googleError = searchParams.get("error") ?? "";
-  console.log(googleError);
 
   const [error, setError] = useState<UserError>({
     error: "no error",
