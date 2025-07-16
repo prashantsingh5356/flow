@@ -18,6 +18,7 @@ export default function Home() {
       <button onClick={() => signIn()}>Signin</button>
       <button onClick={() => signOut()}>Sign out</button>
       <button onClick={() => router.push("/signup")}>Sign Up</button>
+      <button onClick={() => router.push("/dashboard")}>Dashboard</button>
     </>
   );
 }
