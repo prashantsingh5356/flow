@@ -66,7 +66,7 @@ function SignupForm() {
         ok: res.ok,
         status: res.status,
       });
-      router.push("/");
+      router.push("/dashboard");
     }
     setError({
       error: res?.error ?? "",
@@ -78,7 +78,7 @@ function SignupForm() {
   const handlerGoogleSubmit = async (e: any) => {
     e.preventDefault();
     Cookies.set("typeOfGoogle", "signup");
-    await signIn("google", { callbackUrl: "/", redirect: false });
+    await signIn("google", { callbackUrl: "/dashboard", redirect: false });
   };
 
   return (

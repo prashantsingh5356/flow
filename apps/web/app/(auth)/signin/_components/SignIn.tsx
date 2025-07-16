@@ -52,7 +52,7 @@ function SignInForm() {
         ok: res.ok,
         status: res.status,
       });
-      router.push("/");
+      router.push("/dashboard");
     }
     setError({
       error: res?.error ?? "",
@@ -63,7 +63,7 @@ function SignInForm() {
 
   const handlerGoogleSubmit = async (e: any) => {
     e.preventDefault();
-    await signIn("google", { redirect: false });
+    await signIn("google", { callbackUrl: "/dashboard", redirect: false });
   };
 
   return (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
-import { Providers } from "./provider";
+import { Providers } from "./providers/provider";
+import StoreProvider from "./providers/StoreProvider";
 
 export const metadata: Metadata = {
   title: "Flow",
@@ -16,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <StoreProvider>{children}</StoreProvider>
+        </Providers>
       </body>
     </html>
   );
