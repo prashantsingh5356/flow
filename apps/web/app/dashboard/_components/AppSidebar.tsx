@@ -146,7 +146,7 @@ function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-pink-400" />
+      <SidebarFooter />
     </Sidebar>
   );
 }
