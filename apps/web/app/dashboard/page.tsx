@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 const Home = async () => {
   const session = await getServerSession(NEXT_AUTH_CONFIG);
-  console.log(session);
 
   if (!session) redirect("/signin");
   redirect("/dashboard/home");

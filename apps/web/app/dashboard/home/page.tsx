@@ -91,6 +91,7 @@ const membersData: tMembersData = [
 
 const Home = async () => {
   const session = await getServerSession(NEXT_AUTH_CONFIG);
+  console.log("============== session data =====================");
   console.log(session);
 
   if (!session) redirect("/signin");
