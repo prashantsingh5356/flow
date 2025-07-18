@@ -44,13 +44,7 @@ export type tAssignedTaskData = iAssignedTaskData[];
 export type tProjectData = iProjectData[];
 export type tMembersData = iMembersData[];
 
-const analyticsData: tAnalyticsData = [
-  { title: "Total Projects", icon: FaCaretUp, value: "2", type: "up" },
-  { title: "Total Tasks", icon: FaCaretUp, value: "14", type: "up" },
-  { title: "Assigned Tasks", icon: FaCaretUp, value: "7", type: "up" },
-  { title: "Completed Tasks", icon: FaCaretUp, value: "2", type: "up" },
-  { title: "Overdue Tasks", icon: FaCaretDown, value: "0", type: "down" },
-];
+let analyticsData: tAnalyticsData = [];
 
 let assignedTasksData: tAssignedTaskData = [];
 
@@ -58,7 +52,7 @@ const getAllAssignedTaskInWorkspace = async (
   workspaceId: string,
   email: string
 ) => {
-  const tasksInSelectedworkspace = await prisma.tasks.findMany({
+  const tasksInSelectedworkspaceAndOfUser = await prisma.tasks.findMany({
     where: {
       AND: [{ workspaceId: workspaceId }, { assignee: email }],
     },
@@ -71,7 +65,17 @@ const getAllAssignedTaskInWorkspace = async (
     },
   });
 
-  const data = tasksInSelectedworkspace.map((task) => {
+  const allTasksInWorkspace = await prisma.tasks.findMany({
+    where: {
+      workspaceId: workspaceId,
+    },
+  });
+
+  const allCompletedTaskInWorkspace = allTasksInWorkspace.filter(
+    (task) => task.completed
+  );
+
+  const data = tasksInSelectedworkspaceAndOfUser.map((task) => {
     return {
       id: task.id,
       task: task.name,
@@ -81,6 +85,33 @@ const getAllAssignedTaskInWorkspace = async (
   });
 
   assignedTasksData = [...data];
+
+  const assignedTasks = tasksInSelectedworkspaceAndOfUser.length;
+  const totalTask = allTasksInWorkspace.length;
+  const completedTasks = allCompletedTaskInWorkspace.length;
+
+  analyticsData = [
+    { title: "Total Projects", icon: FaCaretUp, value: "", type: "" },
+    {
+      title: "Total Tasks",
+      icon: totalTask > 0 ? FaCaretUp : FaCaretDown,
+      value: String(totalTask),
+      type: totalTask > 0 ? "up" : "down",
+    },
+    {
+      title: "Assigned Tasks",
+      icon: assignedTasks > 0 ? FaCaretUp : FaCaretDown,
+      value: String(assignedTasks),
+      type: assignedTasks > 0 ? "up" : "down",
+    },
+    {
+      title: "Completed Tasks",
+      icon: completedTasks > 0 ? FaCaretUp : FaCaretDown,
+      value: String(completedTasks),
+      type: completedTasks > 0 ? "up" : "down",
+    },
+    { title: "Overdue Tasks", icon: FaCaretDown, value: "0", type: "down" },
+  ];
 };
 
 let projectData: tProjectData = [];
@@ -101,6 +132,17 @@ const getAllWorkspaceProjects = async (workspaceId: string) => {
   });
 
   projectData = [...data];
+
+  const totalProject = projectsInSelectedWorkspace.length;
+  analyticsData = analyticsData.map((data) => {
+    if (data.title !== "Total Projects") return { ...data };
+    return {
+      title: data.title,
+      icon: totalProject > 0 ? FaCaretUp : FaCaretDown,
+      value: String(totalProject),
+      type: totalProject > 0 ? "up" : "down",
+    };
+  });
 };
 
 let membersData: tMembersData = [];
