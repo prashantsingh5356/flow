@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -27,14 +23,15 @@ model User {
   role          Role[]
   workspace     Workspace[]
   tasks         Tasks[]
+  members       Members[]
 }
 
 model Role {
   id          String        @id @default(uuid())
-  role        String        @default("admin")
+  role        String        @default("admin")       // "admin" | "manager" | "member"
   userId      String      
   user        User          @relation(fields: [userId],references: [id])
-  
+  members     Members[]
 }
 
 model Workspace {
@@ -46,6 +43,18 @@ model Workspace {
   user        User          @relation(fields: [userId],references: [id])
   projects    Projects[]
   tasks       Tasks[]
+  members     Members[]
+}
+
+model Members {
+  id          String        @id @default(uuid())
+  userId      String        
+  roleId      String    
+  workspaceId String
+  user        User          @relation(fields: [userId],references: [id])
+  role        Role          @relation(fields: [roleId],references: [id])
+  workspace   Workspace     @relation(fields: [workspaceId],references: [id])
+
 }
 
 model Projects {
