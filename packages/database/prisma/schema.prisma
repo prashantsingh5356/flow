@@ -7,6 +7,7 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -16,12 +17,61 @@ datasource db {
 
 
 model User {
-  id            String     @id @default(uuid())
-  email         String     @unique
+  id            String      @id @default(uuid())
+  email         String      @unique
   firstName     String?
   lastName      String?
-  password      String    @default("somesecretpassword")
+  password      String      @default("somesecretpassword")
   image         String?
   name          String?
+  role          Role[]
+  workspace     Workspace[]
+  tasks         Tasks[]
 }
 
+model Role {
+  id          String        @id @default(uuid())
+  role        String        @default("admin")
+  userId      String      
+  user        User          @relation(fields: [userId],references: [id])
+  
+}
+
+model Workspace {
+  id          String        @id @default(uuid())
+  name        String        @default("Your workspace")
+  description String?       @default("You workspace to collaborate and work with team")
+  image       String?        
+  userId      String  
+  user        User          @relation(fields: [userId],references: [id])
+  projects    Projects[]
+  tasks       Tasks[]
+}
+
+model Projects {
+  id            String       @id @default(uuid())
+  name          String      
+  description   String
+  image         String?
+  createdOn     DateTime?    @default(now())
+  workspaceId   String
+  workspace     Workspace    @relation(fields: [workspaceId],references: [id])
+  tasks         Tasks[]
+}
+
+model Tasks {
+  id            String       @id @default(uuid())
+  name          String  
+  description   String  
+  status        String  
+  createdOn     String        
+  assignee      String  
+  dueDate       String
+  completed     Boolean      @default(false)
+  userId        String 
+  user          User         @relation(fields: [userId],references: [id])
+  workspaceId   String           
+  workspace     Workspace    @relation(fields: [workspaceId],references: [id]) 
+  projectId     String        
+  project       Projects     @relation(fields: [projectId],references: [id])
+}

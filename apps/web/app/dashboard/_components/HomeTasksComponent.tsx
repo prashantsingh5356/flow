@@ -12,8 +12,8 @@ type tData = {
 
 const HomeTasksComponents = ({ data }: tData) => {
   return (
-    <div className="w-[49%] min-w-[470px] h-[55vh] flex items-center ">
-      <div className="w-full h-[52vh]  bg-zinc-100">
+    <div className="w-[49%] min-w-[470px] min-h-[55vh] flex items-center pt-3 mb-2">
+      <div className="w-full min-h-[48vh]  bg-zinc-100">
         <div className="w-full h-20 flex justify-between border-dotted border-b-2 ">
           <div className="w-[75%] h-full  p-4 flex items-center">
             <span className=" text-xl font-semibold">Assigned Tasks (14)</span>
