@@ -9,7 +9,9 @@ const HomeMembersComponent = ({ data }: { data: tMembersData }) => {
     <div className="w-[96%] min-h-45  ">
       <div className="w-full h-15 flex justify-between border-dotted border-b-2 ">
         <div className="w-[75%] h-full  p-4 flex items-center">
-          <span className=" text-xl font-semibold">Members (3)</span>
+          <span className=" text-xl font-semibold">
+            Members ({data.length})
+          </span>
         </div>
         <div className=" w-[10%] h-full flex items-center justify-center ">
           <Button variant="secondary" className="bg-zinc-200 hover:bg-zinc-300">

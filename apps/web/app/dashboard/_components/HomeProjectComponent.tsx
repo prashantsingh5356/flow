@@ -12,7 +12,9 @@ const HomeProjectComponent = ({ data }: { data: tProjectData }) => {
       <div className="w-full max-h-[52vh] min-h-[30vh] bg-zinc-100">
         <div className="w-full h-20 flex justify-between border-dotted border-b-2 ">
           <div className="w-[75%] h-full  p-4 flex items-center">
-            <span className=" text-xl font-semibold">Projects (2)</span>
+            <span className=" text-xl font-semibold">
+              Projects ({data.length})
+            </span>
           </div>
           <div className=" w-[10%] h-full flex items-center justify-center ">
             <Button

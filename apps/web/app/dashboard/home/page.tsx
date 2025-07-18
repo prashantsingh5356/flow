@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 import AnalyticsCard from "../_components/AnalyticsCard";
 
+import { prisma } from "@repo/db";
+
 import { IconType } from "react-icons";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa6";
 import HomeTasksComponents from "../_components/HomeTasksComponent";
@@ -50,51 +52,105 @@ const analyticsData: tAnalyticsData = [
   { title: "Overdue Tasks", icon: FaCaretDown, value: "0", type: "down" },
 ];
 
-const assignedTasksData: tAssignedTaskData = [
-  {
-    id: "1",
-    task: "Conduct usability testing",
-    project: "Mobile App Development",
-    createdOn: "time",
-  },
-  {
-    id: "1",
-    task: "Implement offline mode",
-    project: "Mobile App Development",
-    createdOn: "time",
-  },
-  {
-    id: "1",
-    task: "Integrate push notification",
-    project: "Mobile App Development",
-    createdOn: "time",
-  },
-  { id: "1", task: "Task title", project: "Project name", createdOn: "time" },
-  { id: "1", task: "Task title", project: "Project name", createdOn: "time" },
-];
+let assignedTasksData: tAssignedTaskData = [];
 
-const projectData: tProjectData = [
-  { id: "1", projectName: "App Design and Development", createdOn: "time" },
-  { id: "1", projectName: "Web Design", createdOn: "time" },
-];
+const getAllAssignedTaskInWorkspace = async (
+  workspaceId: string,
+  email: string
+) => {
+  const tasksInSelectedworkspace = await prisma.tasks.findMany({
+    where: {
+      AND: [{ workspaceId: workspaceId }, { assignee: email }],
+    },
+    include: {
+      project: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
-const membersData: tMembersData = [
-  { id: "1", name: "Antonio", email: "antonio@gmail.com", image: "img source" },
-  { id: "1", name: "Admin", email: "admin@gmail.com", image: "img source" },
-  {
-    id: "1",
-    name: "Prashant",
-    email: "prashantsingh5356@gmail.com",
-    image: "img source",
-  },
-];
+  const data = tasksInSelectedworkspace.map((task) => {
+    return {
+      id: task.id,
+      task: task.name,
+      project: task.project.name,
+      createdOn: task.createdOn,
+    };
+  });
+
+  assignedTasksData = [...data];
+};
+
+let projectData: tProjectData = [];
+
+const getAllWorkspaceProjects = async (workspaceId: string) => {
+  const projectsInSelectedWorkspace = await prisma.projects.findMany({
+    where: {
+      workspaceId: workspaceId,
+    },
+  });
+
+  const data = projectsInSelectedWorkspace.map((project) => {
+    return {
+      id: project.id,
+      projectName: project.name ?? "",
+      createdOn: String(project.createdOn) ?? "",
+    };
+  });
+
+  projectData = [...data];
+};
+
+let membersData: tMembersData = [];
+
+const getAllWorkspaceMembers = async (workspaceId: string) => {
+  const membersInWorkspace = await prisma.members.findMany({
+    where: {
+      workspaceId: workspaceId,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  const data = membersInWorkspace.map((member) => {
+    return {
+      name: member.user.name ?? "",
+      email: member.user.email ?? " ",
+      image: member.user.image ?? "",
+      id: member.user.id,
+    };
+  });
+  membersData = [...data];
+};
 
 const Home = async () => {
   const session = await getServerSession(NEXT_AUTH_CONFIG);
-  console.log("============== session data ======================");
-  console.log(session);
 
   if (!session) redirect("/signin");
+  const { user } = session;
+  console.log(user);
+
+  // Getting All workspace of User
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  // Getting selected workspace by user
+  const selectedWorkspace = workspaces[1];
+
+  // Getting all tasks in the selected workspaces
+  await getAllAssignedTaskInWorkspace(selectedWorkspace?.id ?? "", user.email);
+
+  // Getting all projects in the selected workspace
+  await getAllWorkspaceProjects(selectedWorkspace?.id ?? "");
+
+  // Getting all members in the selected workspace
+  await getAllWorkspaceMembers(selectedWorkspace?.id ?? "");
 
   return (
     <>
