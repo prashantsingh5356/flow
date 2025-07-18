@@ -52,6 +52,13 @@ export const NEXT_AUTH_CONFIG = {
           where: {
             email: userData.email,
           },
+          include: {
+            role: {
+              select: {
+                role: true,
+              },
+            },
+          },
         });
 
         // 2.1 get type of action
@@ -71,7 +78,30 @@ export const NEXT_AUTH_CONFIG = {
 
         if (!userExist && typeOfAction === "signup") {
           (await cookiesValue).delete("typeOfCredential");
-          const user = await prisma.user.create({ data: userData });
+          const user = await prisma.user.create({
+            data: {
+              name: userData.name,
+              email: userData.email,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              image: userData.image,
+              password: userData.password,
+              role: {
+                create: { role: "admin" },
+              },
+            },
+            include: {
+              role: {
+                select: {
+                  role: true,
+                },
+              },
+            },
+          });
+
+          console.log("------ created user and role --------");
+          console.log(user);
+
           return {
             id: user.id,
             firstName: user.firstName,
@@ -79,13 +109,34 @@ export const NEXT_AUTH_CONFIG = {
             email: user.email,
             name: user.name,
             image: user.image,
+            role: user.role[0]?.role ?? "member",
           };
         }
 
         // sign In
         // User does not exists, so create user while sign in
         if (!userExist) {
-          const user = await prisma.user.create({ data: userData });
+          const user = await prisma.user.create({
+            data: {
+              name: userData.name,
+              email: userData.email,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              image: userData.image,
+              password: userData.password,
+              role: {
+                create: { role: "admin" },
+              },
+            },
+            include: {
+              role: {
+                select: {
+                  role: true,
+                },
+              },
+            },
+          });
+
           return {
             id: user.id,
             firstName: user.firstName,
@@ -93,6 +144,7 @@ export const NEXT_AUTH_CONFIG = {
             email: user.email,
             name: user.name,
             image: user.image,
+            role: user.role[0]?.role ?? "member",
           };
         }
         // User exists, so return the user after cheking password
@@ -112,6 +164,7 @@ export const NEXT_AUTH_CONFIG = {
           email: userExist.email,
           name: userExist.name,
           image: userExist.image,
+          role: userExist.role[0]?.role ?? "member",
         };
       },
     }),
@@ -138,6 +191,13 @@ export const NEXT_AUTH_CONFIG = {
           where: {
             email: userGoogleDetails.email,
           },
+          include: {
+            role: {
+              select: {
+                role: true,
+              },
+            },
+          },
         });
 
         // signup google action
@@ -151,28 +211,61 @@ export const NEXT_AUTH_CONFIG = {
         if (!isUserExist && typeOfAction === "signup") {
           (await cookieStore).delete("typeOfGoogle");
           const userRes = await prisma.user.create({
-            data: { ...userGoogleDetails, password: "GOOGLE_SIGNUP" },
+            data: {
+              ...userGoogleDetails,
+              password: "GOOGLE_SIGNUP",
+              role: {
+                create: {
+                  role: "admin",
+                },
+              },
+            },
+            include: {
+              role: {
+                select: {
+                  role: true,
+                },
+              },
+            },
           });
           user.id = userRes?.id;
           user.firstName = userRes?.firstName ?? "";
           user.lastName = userRes?.lastName ?? "";
+          user.role = userRes?.role[0]?.role ?? "member";
           return true;
         }
 
         // signin google action
         if (!isUserExist) {
           const userRes = await prisma.user.create({
-            data: { ...userGoogleDetails, password: "GOOGLE_SIGNUP" },
+            data: {
+              ...userGoogleDetails,
+              password: "GOOGLE_SIGNUP",
+              role: {
+                create: {
+                  role: "admin",
+                },
+              },
+            },
+            include: {
+              role: {
+                select: {
+                  role: true,
+                },
+              },
+            },
           });
           user.id = userRes?.id;
           user.firstName = userRes?.firstName ?? "";
           user.lastName = userRes?.lastName ?? "";
+          user.role = userRes?.role[0]?.role ?? "member";
           return true;
         }
 
         user.id = isUserExist?.id;
         user.firstName = isUserExist?.firstName ?? "";
         user.lastName = isUserExist?.lastName ?? "";
+        user.role = isUserExist?.role[0]?.role ?? "member";
         return true;
       }
       return true;
@@ -182,6 +275,7 @@ export const NEXT_AUTH_CONFIG = {
         token.uid = user.id;
         token.uFirstName = user.firstName;
         token.uLastName = user.lastName;
+        token.uRole = user.role;
       }
 
       return token;
@@ -191,6 +285,7 @@ export const NEXT_AUTH_CONFIG = {
         session.user.id = token.uid;
         session.user.firstName = token.uFirstName;
         session.user.lastName = token.uLastName;
+        session.user.role = token.uRole;
       }
 
       return session;
