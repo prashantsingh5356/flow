@@ -11,6 +11,7 @@ import { FaCaretUp, FaCaretDown } from "react-icons/fa6";
 import HomeTasksComponents from "../_components/HomeTasksComponent";
 import HomeProjectComponent from "../_components/HomeProjectComponent";
 import HomeMembersComponent from "../_components/HomeMembersComponent";
+import { cookies } from "next/headers";
 
 export interface iAnalyticsData {
   title: string;
@@ -173,26 +174,33 @@ const Home = async () => {
 
   if (!session) redirect("/signin");
   const { user } = session;
-  console.log(user);
 
-  // Getting All workspace of User
-  const workspaces = await prisma.workspace.findMany({
+  // Getting All workspace of User/member
+  const workspacesData = await prisma.members.findMany({
     where: {
       userId: user.id,
     },
+    include: {
+      workspace: true,
+    },
   });
 
+  const workspaces = workspacesData.map((data) => data.workspace);
+
+  const cookieStore = cookies();
+  const activeWorkspace = (await cookieStore).get("active_workspace")?.value;
+
   // Getting selected workspace by user
-  const selectedWorkspace = workspaces[1];
+  const selectedWorkspace = activeWorkspace;
 
   // Getting all tasks in the selected workspaces
-  await getAllAssignedTaskInWorkspace(selectedWorkspace?.id ?? "", user.email);
+  await getAllAssignedTaskInWorkspace(selectedWorkspace ?? "", user.email);
 
   // Getting all projects in the selected workspace
-  await getAllWorkspaceProjects(selectedWorkspace?.id ?? "");
+  await getAllWorkspaceProjects(selectedWorkspace ?? "");
 
   // Getting all members in the selected workspace
-  await getAllWorkspaceMembers(selectedWorkspace?.id ?? "");
+  await getAllWorkspaceMembers(selectedWorkspace ?? "");
 
   return (
     <>

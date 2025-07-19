@@ -15,10 +15,4 @@ function GET(req: Request) {
   );
 }
 
-async function POST(req: Request) {
-  const data = await req.json();
-
-  return NextResponse.json({ message: "Recieved data" }, { status: 200 });
-}
-
-export { GET, POST };
+export { GET };

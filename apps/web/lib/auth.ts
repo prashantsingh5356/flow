@@ -99,9 +99,6 @@ export const NEXT_AUTH_CONFIG = {
             },
           });
 
-          console.log("------ created user and role --------");
-          console.log(user);
-
           return {
             id: user.id,
             firstName: user.firstName,

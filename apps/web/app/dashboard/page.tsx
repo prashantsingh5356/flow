@@ -6,6 +6,9 @@ const Home = async () => {
   const session = await getServerSession(NEXT_AUTH_CONFIG);
 
   if (!session) redirect("/signin");
+
+  // get user data, user role data, and user workspace data
+
   redirect("/dashboard/home");
 
   return (
