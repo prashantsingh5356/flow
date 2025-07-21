@@ -9,8 +9,13 @@ import {
   Plus,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskFilterComponent from "./TaskFilterComponent";
+
+import { taskColumns, Task } from "./TaskColumns";
+import TaskDataTable from "./TaskDataTable";
+import { useAppSelector } from "@/lib/hooks";
+import { RootState } from "@/lib/store";
 
 const FILTER_TYPES = [
   {
@@ -42,8 +47,38 @@ const FILTER_TYPES = [
   },
 ];
 
+const TASK_DATA: Task = {
+  id: "1211212",
+  name: "Make a youtube video",
+  projectName: "Mobile app development",
+  assignee: "Ashutosh Singh",
+  dueDate: "October 15th, 2024",
+  status: "In Progress",
+};
+
+type tTableData = Task[];
+
 const TaskComponent = () => {
+  const workspace = useAppSelector(
+    (state: RootState) => state.sidebar.workspace
+  );
+  const [taskData, setTaskData] = useState<tTableData>([TASK_DATA]);
   const [activeTask, setActiveTask] = useState("Table");
+
+  const getAllTaskInworkspace = async (id: string) => {
+    const response = await fetch(
+      `http://localhost:3000/api/v1/task?workspace=${workspace}`
+    );
+
+    const result = await response.json();
+    if (result.message !== "Success") return;
+    setTaskData(result.data);
+  };
+
+  useEffect(() => {
+    if (!workspace) return;
+    getAllTaskInworkspace(workspace);
+  }, [workspace]);
   return (
     <div className="w-full min-h-[85vh] ">
       <div className="w-full min-h-15  flex gap-2  items-center justify-between border-b-2 border-dotted">
@@ -90,6 +125,9 @@ const TaskComponent = () => {
         {FILTER_TYPES.map((filter, i) => {
           return <TaskFilterComponent filter={filter} key={i} />;
         })}
+      </div>
+      <div className="  w-full min-h-[71vh] overflow-x-scroll ">
+        <TaskDataTable columns={taskColumns} data={taskData} />
       </div>
     </div>
   );
