@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@repo/db";
 
+// Get user workspaces
 async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
