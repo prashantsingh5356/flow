@@ -6,6 +6,7 @@ const Home = async () => {
   const session = await getServerSession(NEXT_AUTH_CONFIG);
 
   if (!session) redirect("/signin");
+  // Redirect is not working
   redirect("/dashboard/home");
 
   return (

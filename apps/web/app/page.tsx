@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const router = useRouter();
   const session = useSession();
-  console.log("============== session data =====================");
-  console.log(session);
 
   return (
     <>
@@ -19,7 +17,7 @@ export default function Home() {
       <button onClick={() => signIn()}>Signin</button>
       <button onClick={() => signOut()}>Sign out</button>
       <button onClick={() => router.push("/signup")}>Sign Up</button>
-      <button onClick={() => router.push("/dashboard")}>Dashboard</button>
+      <button onClick={() => router.push("/dashboard/home")}>Dashboard</button>
     </>
   );
 }
