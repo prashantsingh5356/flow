@@ -180,7 +180,9 @@ const TaskComponent = () => {
         })}
       </div>
       <div className="  w-full min-h-[71vh] overflow-x-scroll ">
-        <TaskDataTable columns={taskColumns} data={taskData} />
+        {activeTask === "Table" && (
+          <TaskDataTable columns={taskColumns} data={taskData} />
+        )}
       </div>
     </div>
   );
