@@ -62,12 +62,13 @@ const TaskComponent = () => {
   const workspace = useAppSelector(
     (state: RootState) => state.sidebar.workspace
   );
+  const [filterData, setFilterData] = useState(FILTER_TYPES);
   const [taskData, setTaskData] = useState<tTableData>([TASK_DATA]);
   const [activeTask, setActiveTask] = useState("Table");
 
   const getAllTaskInworkspace = async (id: string) => {
     const response = await fetch(
-      `http://localhost:3000/api/v1/task?workspace=${workspace}`
+      `http://localhost:3000/api/v1/task?workspace=${id}`
     );
 
     const result = await response.json();
@@ -75,9 +76,61 @@ const TaskComponent = () => {
     setTaskData(result.data);
   };
 
+  const getAllMembersInWorkspace = async (id: string) => {
+    const response = await fetch(
+      `http://localhost:3000/api/v1/member?workspace=${id}`
+    );
+    const result = await response.json();
+    if (!result) return;
+
+    const memberArr = result.data.map((member: any) => member.name);
+
+    const assigneeData = {
+      name: "Assignees",
+      defaultValue: "All assignees",
+      values: [...memberArr],
+      leftIcon: User,
+      rightIcon: ChevronsUpDown,
+    };
+
+    setFilterData((prev: any) => {
+      const getFilterData = prev.filter(
+        (data: any) => data.name !== "Assignees"
+      );
+      return [...getFilterData, assigneeData];
+    });
+  };
+
+  const getAllProjectsInworkspace = async (id: string) => {
+    const response = await fetch(
+      `http://localhost:3000/api/v1/project?workspace=${id}`
+    );
+    const result = await response.json();
+    if (!result) return;
+
+    const projects = result.data.map((project: any) => project.name);
+
+    const projectsData = {
+      name: "Projects",
+      defaultValue: "All Projects",
+      values: [...projects],
+      leftIcon: Folder,
+      rightIcon: ChevronsUpDown,
+    };
+
+    setFilterData((prev: any) => {
+      const getFilterData = prev.filter(
+        (data: any) => data.name !== "Projects"
+      );
+      return [...getFilterData, projectsData];
+    });
+  };
+
   useEffect(() => {
     if (!workspace) return;
     getAllTaskInworkspace(workspace);
+    getAllMembersInWorkspace(workspace);
+    getAllProjectsInworkspace(workspace);
   }, [workspace]);
   return (
     <div className="w-full min-h-[85vh] ">
@@ -122,7 +175,7 @@ const TaskComponent = () => {
         </div>
       </div>
       <div className="  w-full min-h-20  flex gap-2  items-center border-b-2 border-dotted">
-        {FILTER_TYPES.map((filter, i) => {
+        {filterData.map((filter, i) => {
           return <TaskFilterComponent filter={filter} key={i} />;
         })}
       </div>

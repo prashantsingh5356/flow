@@ -22,6 +22,8 @@ const TaskFilterComponent = ({
     rightIcon?: LucideIcon;
   };
 }) => {
+  // console.log(filter);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
