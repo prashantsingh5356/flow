@@ -20,6 +20,11 @@ async function GET(req: Request) {
             name: true,
           },
         },
+        user: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -31,7 +36,7 @@ async function GET(req: Request) {
         status: task.status,
         createdOn: task.createdOn,
         dueDate: task.dueDate,
-        assignee: task.assignee,
+        assignee: task.user.name,
         completed: task.completed,
         userId: task.userId,
         workspaceId: task.workspaceId,
