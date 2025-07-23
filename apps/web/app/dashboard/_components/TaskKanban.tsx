@@ -151,7 +151,7 @@ const TaskKanban = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="w-10 min-h-[65vh] flex gap-1">
+      <div className="w-10 min-h-[65vh] flex gap-2">
         {kanbanData.columnOrder.map((columnId: string) => {
           const column = kanbanData.columns[columnId];
           const tasks = column?.taskIds.map((taskId) => {
