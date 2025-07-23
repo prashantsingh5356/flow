@@ -17,7 +17,7 @@ const TaskColumn = ({
     | undefined;
 }) => {
   return (
-    <div className="rounded-md overflow-hidden max-w-[320px]  min-w-[300px] bg-zinc-100 px-2 py-4 flex flex-col items-center gap-2">
+    <div className="rounded-md  max-w-[320px]  min-w-[280px] bg-zinc-100 px-2 py-4 flex flex-col items-center gap-2">
       <div className=" w-full flex gap-2 px-2">
         <div className="flex items-center">
           <CheckCircle className="h-4 w-4 text-red-500" />

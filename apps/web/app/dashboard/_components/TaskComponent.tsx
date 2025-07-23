@@ -17,6 +17,7 @@ import TaskDataTable from "./TaskDataTable";
 import { useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
 import TaskKanban from "./TaskKanban";
+import TaskCalendar from "./TaskCalendar";
 
 const FILTER_TYPES = [
   {
@@ -185,6 +186,7 @@ const TaskComponent = () => {
           <TaskDataTable columns={taskColumns} data={taskData} />
         )}
         {activeTask === "Kanban" && <TaskKanban />}
+        {activeTask === "Calendar" && <TaskCalendar />}
       </div>
     </div>
   );
