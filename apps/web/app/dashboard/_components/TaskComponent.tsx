@@ -16,6 +16,7 @@ import { taskColumns, Task } from "./TaskColumns";
 import TaskDataTable from "./TaskDataTable";
 import { useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
+import TaskKanban from "./TaskKanban";
 
 const FILTER_TYPES = [
   {
@@ -179,10 +180,11 @@ const TaskComponent = () => {
           return <TaskFilterComponent filter={filter} key={i} />;
         })}
       </div>
-      <div className="  w-full min-h-[71vh] overflow-x-scroll ">
+      <div className="  w-full min-h-[71vh] overflow-x-scroll pt-5">
         {activeTask === "Table" && (
           <TaskDataTable columns={taskColumns} data={taskData} />
         )}
+        {activeTask === "Kanban" && <TaskKanban />}
       </div>
     </div>
   );
