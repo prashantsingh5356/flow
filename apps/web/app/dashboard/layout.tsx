@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="w-full h-[100vh]">
+    <div className="w-[100%] h-[100vh]  ">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -29,7 +29,7 @@ export default function RootLayout({
               <NavBreadCrumb />
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 ">
             <main>{children}</main>
           </div>
         </SidebarInset>

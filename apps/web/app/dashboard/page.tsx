@@ -11,7 +11,7 @@ const Home = async () => {
 
   return (
     <>
-      <div className=" w-full h-[100vh]">
+      <div className=" w-full h-[100vh] ">
         <h1>this is dashboard page : {session?.user.email}</h1>
       </div>
     </>

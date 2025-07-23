@@ -11,7 +11,7 @@ const Home = async () => {
   return (
     <>
       <div className=" w-full min-h-[90vh] px-8 py-2 ">
-        <div className="w-full min-h-[90vh] border-1 rounded-md overflow-hidden px-4 py-3">
+        <div className="w-full min-h-[90vh] border-1 rounded-md px-4 py-3 ">
           <TaskComponent />
         </div>
       </div>

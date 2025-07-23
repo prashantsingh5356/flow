@@ -135,7 +135,7 @@ const TaskComponent = () => {
   }, [workspace]);
   return (
     <div className="w-full min-h-[85vh] ">
-      <div className="w-full min-h-15  flex gap-2  items-center justify-between border-b-2 border-dotted">
+      <div className="w-full min-h-15  flex gap-2 py-2 sm:py-0  items-center sm:justify-between border-b-2 border-dotted flex-wrap">
         <div className="flex gap-2">
           <Button
             onClick={() => {
@@ -175,12 +175,12 @@ const TaskComponent = () => {
           </Button>
         </div>
       </div>
-      <div className="  w-full min-h-20  flex gap-2  items-center border-b-2 border-dotted">
+      <div className=" py-2 sm:py-0 w-full min-h-20  flex gap-2  flex-wrap items-center border-b-2 border-dotted">
         {filterData.map((filter, i) => {
           return <TaskFilterComponent filter={filter} key={i} />;
         })}
       </div>
-      <div className="  w-full min-h-[71vh] overflow-x-scroll pt-5">
+      <div className="  w-full min-h-[71vh] pt-5 overflow-x-scroll">
         {activeTask === "Table" && (
           <TaskDataTable columns={taskColumns} data={taskData} />
         )}

@@ -34,25 +34,35 @@ const KANBAN_DATA: {
     "task-6": { id: "task-6", content: "Review CI/CD" },
   },
   columns: {
+    "column-0": {
+      id: "column-0",
+      title: "Backlogs",
+      taskIds: ["task-2"],
+    },
     "column-1": {
       id: "column-1",
       title: "Todo",
-      taskIds: ["task-1", "task-2"],
+      taskIds: ["task-1"],
     },
     "column-2": {
       id: "column-2",
-      title: "Working",
+      title: "In Progress",
       taskIds: ["task-3", "task-4"],
     },
     "column-3": {
       id: "column-3",
-      title: "Review",
+      title: "In Review",
       taskIds: ["task-5", "task-6"],
+    },
+    "column-4": {
+      id: "column-4",
+      title: "Done",
+      taskIds: [],
     },
   },
 
   // Reordering of columns
-  columnOrder: ["column-1", "column-2", "column-3"],
+  columnOrder: ["column-0", "column-1", "column-2", "column-3", "column-4"],
 };
 
 const TaskKanban = () => {
@@ -141,7 +151,7 @@ const TaskKanban = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="w-full min-h-[65vh] flex gap-5">
+      <div className="w-10 min-h-[65vh] flex gap-1">
         {kanbanData.columnOrder.map((columnId: string) => {
           const column = kanbanData.columns[columnId];
           const tasks = column?.taskIds.map((taskId) => {
